@@ -5,7 +5,7 @@ const LIKE_STORE = 'likes';
 function openDB() {
   console.log('openDB called');
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(DB_NAME, 2);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -73,4 +73,15 @@ export async function unlikeStory(id) {
   const tx = db.transaction(LIKE_STORE, 'readwrite');
   tx.objectStore(LIKE_STORE).delete(id);
   return tx.complete;
+}
+
+export async function getLikedStories() {
+  const db = await openDB();
+  const tx = db.transaction(LIKE_STORE, 'readonly');
+  const store = tx.objectStore(LIKE_STORE);
+  return new Promise((resolve, reject) => {
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 }

@@ -1,8 +1,26 @@
-import { isStoryLiked, likeStory, unlikeStory } from '../idb.js';
+import { isStoryLiked, likeStory, unlikeStory, getLikedStories } from '../idb.js';
 
 class StoryView {
     constructor() {
         this._content = document.getElementById('content');
+        this._setupLikedNavButton();
+    }
+
+    _setupLikedNavButton() {
+        // Tambahkan tombol ke navbar jika belum ada
+        const nav = document.getElementById('navigationDrawer');
+        if (nav && !nav.querySelector('.liked-stories-link')) {
+            const ul = nav.querySelector('ul');
+            const li = document.createElement('li');
+            li.innerHTML = '<a href="#/liked" class="liked-stories-link">Liked Stories</a>';
+            ul.appendChild(li);
+        }
+        // Event listener untuk route liked
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#/liked') {
+                this.showLikedStories();
+            }
+        });
     }
 
     async showStories(stories) {
@@ -19,6 +37,17 @@ class StoryView {
         await this._setupLikeButtons(stories);
     }
 
+    async showLikedStories() {
+        const stories = await getLikedStories();
+        this._content.innerHTML = `
+            <h2>Liked Stories</h2>
+            <div class="story-list">
+                ${stories.length === 0 ? '<p>Tidak ada story yang di-like.</p>' : stories.map(story => this._createLikedStoryElement(story)).join('')}
+            </div>
+        `;
+        await this._setupUnlikeButtons(stories);
+    }
+
     _createStoryElement(story) {
         return `
             <article class="story-item">
@@ -28,6 +57,20 @@ class StoryView {
                     <p>${story.description}</p>
                     <p>Created: ${new Date(story.createdAt).toLocaleDateString()}</p>
                     <button class="like-btn" data-id="${story.id}">Like</button>
+                </div>
+            </article>
+        `;
+    }
+
+    _createLikedStoryElement(story) {
+        return `
+            <article class="story-item">
+                <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
+                <div class="story-item__content">
+                    <h2>${story.name}</h2>
+                    <p>${story.description}</p>
+                    <p>Created: ${new Date(story.createdAt).toLocaleDateString()}</p>
+                    <button class="unlike-btn" data-id="${story.id}">Unlike</button>
                 </div>
             </article>
         `;
@@ -88,6 +131,22 @@ class StoryView {
                     await likeStory(story);
                     btn.textContent = 'Unlike';
                     btn.classList.add('liked');
+                }
+            };
+        }
+    }
+
+    async _setupUnlikeButtons(stories) {
+        const buttons = this._content.querySelectorAll('.unlike-btn');
+        for (const btn of buttons) {
+            const id = btn.getAttribute('data-id');
+            btn.onclick = async () => {
+                await unlikeStory(id);
+                // Hapus dari UI setelah di-unlike
+                btn.closest('article').remove();
+                // Jika sudah tidak ada liked story, tampilkan pesan
+                if (this._content.querySelectorAll('.unlike-btn').length === 0) {
+                    this._content.querySelector('.story-list').innerHTML = '<p>Tidak ada story yang di-like.</p>';
                 }
             };
         }
