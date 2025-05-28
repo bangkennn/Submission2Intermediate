@@ -1,9 +1,11 @@
+import { isStoryLiked, likeStory, unlikeStory } from '../idb.js';
+
 class StoryView {
     constructor() {
         this._content = document.getElementById('content');
     }
 
-    showStories(stories) {
+    async showStories(stories) {
         this._content.innerHTML = `
             <div class="story-list">
                 ${stories.map(story => this._createStoryElement(story)).join('')}
@@ -12,6 +14,9 @@ class StoryView {
 
         // Initialize map
         this._initMap(stories);
+
+        // Tambahkan logika tombol like
+        await this._setupLikeButtons(stories);
     }
 
     _createStoryElement(story) {
@@ -22,6 +27,7 @@ class StoryView {
                     <h2>${story.name}</h2>
                     <p>${story.description}</p>
                     <p>Created: ${new Date(story.createdAt).toLocaleDateString()}</p>
+                    <button class="like-btn" data-id="${story.id}">Like</button>
                 </div>
             </article>
         `;
@@ -58,6 +64,32 @@ class StoryView {
         );
         if (bounds.isValid()) {
             map.fitBounds(bounds);
+        }
+    }
+
+    async _setupLikeButtons(stories) {
+        const buttons = this._content.querySelectorAll('.like-btn');
+        for (const btn of buttons) {
+            const id = btn.getAttribute('data-id');
+            const story = stories.find(s => String(s.id) === String(id));
+            if (await isStoryLiked(id)) {
+                btn.textContent = 'Unlike';
+                btn.classList.add('liked');
+            } else {
+                btn.textContent = 'Like';
+                btn.classList.remove('liked');
+            }
+            btn.onclick = async () => {
+                if (await isStoryLiked(id)) {
+                    await unlikeStory(id);
+                    btn.textContent = 'Like';
+                    btn.classList.remove('liked');
+                } else {
+                    await likeStory(story);
+                    btn.textContent = 'Unlike';
+                    btn.classList.add('liked');
+                }
+            };
         }
     }
 
