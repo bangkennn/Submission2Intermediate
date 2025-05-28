@@ -2,4 +2,4 @@ API Keys:
 - Story API: https://story-api.dicoding.dev/v1
 - Map Service: OpenStreetMap
 
-Github Pages : https://bangkennn.github.io/ProjectAkhirIntermediate/
+netlify Pages : https://submission2intermadiatestoryapp.netlify.app/
