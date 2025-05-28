@@ -1,0 +1,36 @@
+{
+  "short_name": "StoryApp",
+  "name": "Story App",
+  "icons": [
+    {
+      "src": "styles/images/dicoding192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "styles/images/dicoding512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "description": "Aplikasi untuk berbagi cerita.",
+  "screenshots": [
+    {
+      "src": "styles/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "styles/images/screenshot-phone.png",
+      "sizes": "720x1280",
+      "type": "image/png"
+    }
+  ]
+}
