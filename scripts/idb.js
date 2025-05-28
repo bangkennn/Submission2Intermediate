@@ -19,7 +19,12 @@ function openDB() {
 export async function saveStory(story) {
   const db = await openDB();
   const tx = db.transaction(STORE_NAME, 'readwrite');
-  tx.objectStore(STORE_NAME).add(story);
+  const store = tx.objectStore(STORE_NAME);
+  if (Array.isArray(story)) {
+    story.forEach(s => store.put(s));
+  } else {
+    store.put(story);
+  }
   return tx.complete;
 }
 

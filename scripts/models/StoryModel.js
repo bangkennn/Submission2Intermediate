@@ -1,3 +1,5 @@
+import { getStories as getLocalStories, saveStory as addLocalStory, deleteStory as deleteLocalStory } from '../idb.js';
+
 export const API_BASE_URL = 'https://story-api.dicoding.dev/v1';
 
 class DataCerita {
@@ -69,9 +71,16 @@ class DataCerita {
             if (responseJson.error) {
                 throw new Error(responseJson.message);
             }
+            // Simpan ke IndexedDB
+            await addLocalStory(responseJson.listStory);
             return responseJson.listStory;
         } catch (error) {
+            // Jika gagal fetch dari API, ambil dari IndexedDB
             console.error('Error fetching stories:', error);
+            const localStories = await getLocalStories();
+            if (localStories && localStories.length > 0) {
+                return localStories;
+            }
             throw error;
         }
     }
@@ -103,6 +112,15 @@ class DataCerita {
         }
     }
 
+    async getLocalStories() {
+        return await getLocalStories();
+    }
+    async addLocalStory(story) {
+        return await addLocalStory(story);
+    }
+    async deleteLocalStory(id) {
+        return await deleteLocalStory(id);
+    }
 }
 
 export default DataCerita; 
