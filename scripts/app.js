@@ -80,6 +80,10 @@ class App {
                 this._data.logout();
                 this._renderNavLinks();
                 window.location.hash = '#/login';
+            },
+            '/liked': () => {
+                const storyPresenter = new PengelolaStory();
+                storyPresenter.tampilkanLiked();
             }
         };
 

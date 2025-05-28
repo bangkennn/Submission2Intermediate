@@ -16,6 +16,10 @@ class PengelolaStory {
             this._view.showError(error.message);
         }
     }
+
+    async tampilkanLiked() {
+        await this._view.showLikedStories();
+    }
 }
 
 export default PengelolaStory;
