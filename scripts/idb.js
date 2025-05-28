@@ -2,6 +2,7 @@ const DB_NAME = 'storyapp-db';
 const STORE_NAME = 'stories';
 
 function openDB() {
+  console.log('openDB called');
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
     request.onupgradeneeded = (event) => {
